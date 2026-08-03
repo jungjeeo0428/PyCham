@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Portal (Decoupled SPA Architecture)</title>
+    <!-- 클라이언트 전용 CSS 스타일시트 연동 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 상단 네비게이션 헤더 -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">🌐 Decoupled Architecture Portal</a>
+
+            <!-- 로그인 시 유저 정보 및 로그아웃 버튼 영역 (JS에서 동적 토글) -->
+            <div id="nav-user-info" class="nav-user-info hidden">
+                <span id="user-badge" class="user-badge"></span>
+                <button id="btn-logout" class="btn-logout">로그아웃</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="main-wrapper">
+        <!-- 클라이언트 전용 동적 알림 토스트 영역 -->
+        <div id="toast-area" class="toast-container"></div>
+
+        <!-- 1. 로그인 섹션 (비로그인 시 노출) -->
+        <section id="login-section" class="auth-container">
+            <div class="auth-card">
+                <h2>서비스 로그인</h2>
+                <p class="auth-subtitle">Frontend Fetch API ➡ Backend REST API JSON 통신</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">아이디 (mem_id)</label>
+                        <input type="text" id="username" class="form-input" placeholder="아이디를 입력하세요" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">비밀번호 (mem_pass)</label>
+                        <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">로그인</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. 회원 목록 조회 섹션 (로그인 성공 시 JS가 동적 토글 노출) -->
+        <section id="members-section" class="hidden">
+            <!-- 검색바 폼 -->
+            <div class="search-container">
+                <form id="search-form" class="search-form">
+                    <select id="search_type" class="search-select">
+                        <option value="all">전체 검색</option>
+                        <option value="name">이름</option>
+                        <option value="id">아이디</option>
+                        <option value="gender">성별(관심/직업)</option>
+                    </select>
+
+                    <input type="text" id="search_input" class="search-input" placeholder="검색할 키워드를 입력하세요">
+                    <button type="submit" class="btn-search-action">검색</button>
+                    <button type="button" id="btn-reset" class="btn-reset-action">초기화</button>
+                </form>
+            </div>
+
+            <!-- 회원 목록 데이터 테이블 카드 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>👥 회원 목록 (JS DOM 동적 렌더링)</h3>
+                    <span style="font-size: 0.9rem; color: var(--text-muted);">총 <strong id="member-count">0</strong>명의 회원</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>아이디</th>
+                                <th>이름</th>
+                                <th>성별 (관심/직업)</th>
+                                <th>이메일</th>
+                                <th class="text-right">마일리지</th>
+                            </tr>
+                        </thead>
+                        <!-- 백엔드에서 받은 JSON 데이터를 기반으로 JS가 동적 <tr> 조립 -->
+                        <tbody id="members-tbody">
+                            <tr>
+                                <td colspan="5" class="text-center">데이터를 불러오는 중입니다...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p>&copy; 2026 Demo. Pure HTML/CSS/JS + Flask REST API.</p>
+    </footer>
+
+    <!-- 클라이언트 애플리케이션 스크립트 연동 -->
+    <script src="js/app.js"></script>
+</body>
+</html>

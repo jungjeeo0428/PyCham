@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - Member Portal</title>
+    <!-- 분리된 전용 화이트 테마 CSS 연동 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- 상단 헤더 -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Member Portal</a>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="main-wrapper">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>서비스 로그인</h2>
+                <p class="auth-subtitle">member_db의 계정 정보로 로그인해 주세요.</p>
+
+                <!-- 플래시 메시지 출력 -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }}">
+                          <span>{{ message }}</span>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <!-- 로그인 폼 -->
+                <form id="login-form" action="{{ url_for('login') }}" method="POST">
+                    <div class="form-group">
+                        <label for="username">아이디</label>
+                        <input type="text" id="username" name="username" class="form-input" placeholder="아이디를 입력하세요" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">로그인</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p>&copy; 2026 Member Portal Demo. PyMySQL Direct Connection.</p>
+    </footer>
+
+    <!-- 분리된 전용 스크립트 연동 -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
