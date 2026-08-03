@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 목록 조회 - Member Portal</title>
+    <!-- 분리된 전용 화이트 테마 CSS 연동 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* 검색창 폼 전용 깔끔한 레이아웃 추가 */
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        .search-select {
+            padding: 0.65rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            background: #ffffff;
+            color: var(--text-primary);
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: var(--accent-blue);
+        }
+        .btn-search-action {
+            padding: 0.65rem 1.4rem;
+            background: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn-search-action:hover {
+            background: var(--accent-blue-hover);
+        }
+        .btn-reset-action {
+            padding: 0.65rem 1.2rem;
+            background: #ffffff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 네비게이션 헤더 -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Member Portal</a>
+            <div class="nav-user-info">
+                <span class="user-badge">🔑 {{ current_name }} ({{ current_user }})</span>
+                <a href="{{ url_for('logout') }}" class="btn-logout">로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="main-wrapper">
+        <!-- 플래시 메시지 출력 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                  <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- 회원 검색 폼 -->
+        <div class="search-container">
+            <form action="{{ url_for('members') }}" method="GET" class="search-form">
+                <!-- 이름, 아이디, 성별 필터 셀렉트 박스 -->
+                <select name="search_type" class="search-select">
+                    <option value="all" {% if search_type == 'all' %}selected{% endif %}>전체 검색</option>
+                    <option value="name" {% if search_type == 'name' %}selected{% endif %}>이름</option>
+                    <option value="id" {% if search_type == 'id' %}selected{% endif %}>아이디</option>
+                    <option value="gender" {% if search_type == 'gender' %}selected{% endif %}>성별(관심/직업)</option>
+                </select>
+
+                <input type="text" name="search" class="search-input" value="{{ search }}" placeholder="검색할 키워드를 입력하세요">
+                <button type="submit" class="btn-search-action">검색</button>
+                {% if search %}
+                    <a href="{{ url_for('members') }}" class="btn-reset-action">초기화</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- 회원 목록 테이블 카드 (핵심 5개 컬럼만 명확히 출력) -->
+        <div class="card">
+            <div class="card-header">
+                <h3>👥 회원 목록 정보</h3>
+                <span style="font-size: 0.9rem; color: var(--text-muted);">총 <strong>{{ member_list | length }}</strong>명의 회원 조회됨</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>아이디</th>
+                            <th>이름</th>
+                            <th>성별 (관심/직업)</th>
+                            <th>이메일</th>
+                            <th class="text-right">마일리지</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in member_list %}
+                        <tr>
+                            <td><strong>{{ member.mem_id }}</strong></td>
+                            <td>{{ member.mem_name }}</td>
+                            <td>{{ member.mem_like or member.mem_job or '-' }}</td>
+                            <td>{{ member.mem_mail or member.mem_email or '-' }}</td>
+                            <td class="text-right mileage-text">
+                                {% if member.mem_mileage is number %}
+                                    {{ "{:,.0f}".format(member.mem_mileage) }} 점
+                                {% else %}
+                                    {{ member.mem_mileage or 0 }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">조회 조건에 일치하는 회원 데이터가 없습니다.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p>&copy; 2026 Member Portal Demo. Clean 5-Column Table Layout.</p>
+    </footer>
+
+    <!-- 분리된 전용 스크립트 연동 -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
